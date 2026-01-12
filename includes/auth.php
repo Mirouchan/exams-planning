@@ -3,8 +3,7 @@ session_start();
 require_once __DIR__ . '/../config/database.php';
 
 /**
- * Ensure the user is logged in.
- * Redirects to login page if not.
+ * Ensure the user is logged in
  */
 function requireLogin(): void
 {
@@ -16,28 +15,35 @@ function requireLogin(): void
 
 /**
  * Login function
- * @param string $id User ID
- * @param string|null $name User name (for students/professors)
- * @return bool True if login successful
  */
-function login(string $id, ?string $name = null): bool
+function login(string $id, ?string $fullname = null): bool
 {
     global $pdo;
 
-    // --- Admin login ---
-    if ($id === 'admin' && $name === 'admin') {
+    // ---------- ADMIN ----------
+    if ($id === 'admin' && $fullname === 'admin') {
         $_SESSION['user'] = [
-            'username' => 'admin',
-            'role' => 'admin',
-            'name' => 'Administrator'
+            'id' => 'admin',
+            'name' => 'Administrator',
+            'role' => 'admin'
         ];
         return true;
     }
 
-    // --- Professor login ---
-    $stmt = $pdo->prepare("SELECT * FROM professeurs WHERE id = ? AND nom = ?");
-    $stmt->execute([$id, $name]);
-    $prof = $stmt->fetch();
+    // ---------- PROFESSOR ----------
+    $sql = "SELECT * FROM professeurs
+            WHERE id = :id
+            AND LOWER(TRIM(CONCAT(nom, ' ', prenom))) = LOWER(TRIM(:fullname))
+            LIMIT 1";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':id' => $id,
+        ':fullname' => $fullname
+    ]);
+
+    $prof = $stmt->fetch(PDO::FETCH_ASSOC);
+
     if ($prof) {
         $_SESSION['user'] = [
             'id' => $prof['id'],
@@ -47,10 +53,20 @@ function login(string $id, ?string $name = null): bool
         return true;
     }
 
-    // --- Student login ---
-    $stmt = $pdo->prepare("SELECT * FROM etudiants WHERE id = ? AND nom = ?");
-    $stmt->execute([$id, $name]);
-    $student = $stmt->fetch();
+    // ---------- STUDENT ----------
+    $sql = "SELECT * FROM etudiants
+            WHERE id = :id
+            AND LOWER(TRIM(CONCAT(nom, ' ', prenom))) = LOWER(TRIM(:fullname))
+            LIMIT 1";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        ':id' => $id,
+        ':fullname' => $fullname
+    ]);
+
+    $student = $stmt->fetch(PDO::FETCH_ASSOC);
+
     if ($student) {
         $_SESSION['user'] = [
             'id' => $student['id'],
@@ -64,11 +80,12 @@ function login(string $id, ?string $name = null): bool
 }
 
 /**
- * Logout user
+ * Logout
  */
 function logout(): void
 {
     $_SESSION = [];
+
     if (ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
         setcookie(
@@ -81,25 +98,26 @@ function logout(): void
             $params["httponly"]
         );
     }
+
     session_destroy();
     header('Location: /exams-planning/login.php');
     exit;
 }
 
 /**
- * Check user roles
+ * Role helpers
  */
 function isAdmin(): bool
 {
-    return isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin';
+    return ($_SESSION['user']['role'] ?? '') === 'admin';
 }
 
 function isProf(): bool
 {
-    return isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'prof';
+    return ($_SESSION['user']['role'] ?? '') === 'prof';
 }
 
 function isStudent(): bool
 {
-    return isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'student';
+    return ($_SESSION['user']['role'] ?? '') === 'student';
 }

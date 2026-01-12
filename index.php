@@ -7,19 +7,7 @@ requireLogin();
 $page = $_GET['page'] ?? 'dashboard';
 $valid_pages = [
     'dashboard',
-    'departements',
-    'formations',
-    'professeurs',
-    'modules',
-    'etudiants',
-    'inscriptions',
-    'lieux',
-    'sessions',
-    'jours',
-    'examens',
-    'surveillances',
-    'conflits',
-    'profile'
+  
 ];
 
 // Only include valid pages
@@ -33,15 +21,15 @@ $content_page = in_array($page, $valid_pages) && is_file("pages/$page/index.php"
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planning des Examens</title>
+    <title>Planning des Examens12</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body>
-    <?php include 'includes/header.php'; ?>
-    <?php include 'includes/navbar.php'; ?>
+  
+    <?php  ?>
 
     <main class="container mt-4">
         <?php include $content_page; ?>

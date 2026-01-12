@@ -12,8 +12,8 @@ $user = $_SESSION['user'] ?? null;
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
     <div class="container-fluid">
         <!-- Brand -->
-        <a class="navbar-brand fw-bold d-flex align-items-center text-primary" href="/exams-planning/pages/dashboard.php">
-            <i class="bi bi-mortarboard-fill me-2"></i>Exams Planning
+        <a class="navbar-brand fw-bold d-flex align-items-center text-primary">
+            <i class="bi bi-mortarboard-fill me-2"></i>Exams Planning1
         </a>
 
         <!-- Toggler -->
