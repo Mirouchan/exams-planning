@@ -17,5 +17,4 @@ try {
 } catch (\PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
 }
- user.name "mirouchan"
-user.email "riham.zerifi@gmail.com"
+ 
